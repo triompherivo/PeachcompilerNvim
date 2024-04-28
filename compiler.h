@@ -2,7 +2,8 @@
 #define PEACHCOMPILER_H
 #include <stdbool.h>
 #include <stdio.h>
-
+#include <string.h>
+#define S_EQ(str, str2) (str && str2 && (strcmp(str, str2) == 0))
 struct pos {
   int line;
   int col;
@@ -20,6 +21,25 @@ struct pos {
   case '7':                                                                    \
   case '8':                                                                    \
   case '9'
+
+#define OPERATOR_CASE_EXCLUDING_DIVISION                                       \
+  case '+':                                                                    \
+  case '-':                                                                    \
+  case '*':                                                                    \
+  case '>':                                                                    \
+  case '<':                                                                    \
+  case '^':                                                                    \
+  case '%':                                                                    \
+  case '!':                                                                    \
+  case '=':                                                                    \
+  case '~':                                                                    \
+  case '|':                                                                    \
+  case '&':                                                                    \
+  case '(':                                                                    \
+  case '[':                                                                    \
+  case ',':                                                                    \
+  case '.':                                                                    \
+  case '?'
 
 enum { LEXICAL_ANALYSIS_ALL_OK, LEXICAL_ANALYSIS_INPUT_ERROR };
 enum {
@@ -107,4 +127,5 @@ int lex(struct lex_process *process);
 void compiler_error(struct compile_process *compiler, const char *msg, ...);
 void compiler_warning(struct compile_process *compiler, const char *msg, ...);
 
+bool token_is_keyword(struct token *token, const char *value);
 #endif
