@@ -22,6 +22,16 @@ struct pos {
   case '8':                                                                    \
   case '9'
 
+#define SYMBOL_CASE                                                            \
+  case '{':                                                                    \
+  case '}':                                                                    \
+  case ':':                                                                    \
+  case ';':                                                                    \
+  case '#':                                                                    \
+  case '\\':                                                                   \
+  case ')':                                                                    \
+  case ']'
+
 #define OPERATOR_CASE_EXCLUDING_DIVISION                                       \
   case '+':                                                                    \
   case '-':                                                                    \
@@ -128,4 +138,7 @@ void compiler_error(struct compile_process *compiler, const char *msg, ...);
 void compiler_warning(struct compile_process *compiler, const char *msg, ...);
 
 bool token_is_keyword(struct token *token, const char *value);
+
+struct lex_process *tokens_build_for_string(struct compile_process *compiler,
+                                            const char *str);
 #endif
