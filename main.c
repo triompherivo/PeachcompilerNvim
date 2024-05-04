@@ -1,6 +1,7 @@
+#include <stdio.h>
+
 #include "compiler.h"
 #include "helpers/vector.h"
-#include <stdio.h>
 int main() {
   // to comment a block of line : enter in v mode then :  type norm i//
   //   struct vector *vec = vector_create(sizeof(int));
@@ -17,6 +18,7 @@ int main() {
   //   }
   //  printf("Hello world!\n");
   int res = compile_file("./test.c", "./test", 0);
+
   if (res == COMPILER_FILE_COMPILED_OK) {
     printf("everything compiled fine\n");
   } else if (res == COMPILER_FAILED_WITH_ERRORS) {
