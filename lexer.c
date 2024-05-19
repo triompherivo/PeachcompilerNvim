@@ -1,14 +1,15 @@
-#include "compiler.h"
-#include "helpers/buffer.h"
-#include "helpers/vector.h"
 #include <assert.h>
 #include <ctype.h>
 #include <string.h>
 
-#define LEX_GETC_IF(buffer, c, exp)                                            \
-  for (c = peekc(); exp; c = peekc()) {                                        \
-    buffer_write(buffer, c);                                                   \
-    nextc();                                                                   \
+#include "compiler.h"
+#include "helpers/buffer.h"
+#include "helpers/vector.h"
+
+#define LEX_GETC_IF(buffer, c, exp)     \
+  for (c = peekc(); exp; c = peekc()) { \
+    buffer_write(buffer, c);            \
+    nextc();                            \
   }
 
 struct token *read_next_token();
@@ -20,7 +21,6 @@ static struct token tmp_token;
 static char peekc() { return lex_process->function->peek_char(lex_process); }
 
 static char nextc() {
-
   char c = lex_process->function->next_char(lex_process);
   if (lex_is_in_expression()) {
     buffer_write(lex_process->parenthesis_buffer, c);
@@ -211,6 +211,11 @@ static void lex_finish_expression() {
 bool lex_is_in_expression() {
   return lex_process->current_expression_count > 0;
 }
+bool keyword_is_datatype(const char *str) {
+  return S_EQ(str, "void") || S_EQ(str, "char") || S_EQ(str, "int") ||
+         S_EQ(str, "short") || S_EQ(str, "float") || S_EQ(str, "double") ||
+         S_EQ(str, "long") || S_EQ(str, "struct") || S_EQ(str, "union");
+}
 bool is_keyword(const char *str) {
   char op = peekc();
   return S_EQ(str, "unsigned") || S_EQ(str, "signed") ||
@@ -375,19 +380,19 @@ struct token *token_make_newline() {
 char lex_get_escaped_char(char c) {
   char co = 0;
   switch (c) {
-  case 'n':
-    co = '\n';
-    break;
-  case '\\':
-    co = '\\';
+    case 'n':
+      co = '\n';
+      break;
+    case '\\':
+      co = '\\';
 
-    break;
-  case 't':
-    co = '\t';
-    break;
-  case '\'':
-    co = '\'';
-    break;
+      break;
+    case 't':
+      co = '\t';
+      break;
+    case '\'':
+      co = '\'';
+      break;
   }
   return co;
 }
@@ -478,34 +483,34 @@ struct token *read_next_token() {
   SYMBOL_CASE:
     token = token_make_symbol();
     break;
-  case 'b':
+    case 'b':
 
-  case 'x':
-    token = token_make_special_number();
-    break;
-  case '"':
+    case 'x':
+      token = token_make_special_number();
+      break;
+    case '"':
 
-    token = token_make_string('"', '"');
-    break;
-  case '\'':
-    token = token_make_quote();
-    break;
-  case ' ':
-  case '\t':
-    token = handle_whitespace();
-    break;
-  case '\n':
-    token = token_make_newline();
-    break;
-  case EOF:
-    // we have finished lexical analysis on the file
-    break;
-  default:
-    // compiler_error(lex_process->compiler, "Unexpected token\n");
-    token = read_special_token();
-    // if (!token) {
-    // compiler_error(lex_process->compiler, "Unexpected token\n");
-    // }
+      token = token_make_string('"', '"');
+      break;
+    case '\'':
+      token = token_make_quote();
+      break;
+    case ' ':
+    case '\t':
+      token = handle_whitespace();
+      break;
+    case '\n':
+      token = token_make_newline();
+      break;
+    case EOF:
+      // we have finished lexical analysis on the file
+      break;
+    default:
+      // compiler_error(lex_process->compiler, "Unexpected token\n");
+      token = read_special_token();
+      // if (!token) {
+      // compiler_error(lex_process->compiler, "Unexpected token\n");
+      // }
   }
   return token;
 }
